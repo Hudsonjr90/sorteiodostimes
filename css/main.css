@@ -325,10 +325,9 @@ body {
 
 .copy{
   color: rgb(255, 255, 255);
-  border-bottom: 0.3rem solid #dedede;
+  border-bottom: 0.3rem solid #ffffff;
   display: relative;
   margin-left: 13px;
-  justify-content: center;
-  align-items: center;
+  
 }
 
