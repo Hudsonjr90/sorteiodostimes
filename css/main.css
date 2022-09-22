@@ -34,11 +34,11 @@ a {
 }
 
 a:visited {
-    color: #551a8b;
+    color: #ffffff;
 }
 
 a:hover {
-    color: #06e;
+    color: rgb(21, 149, 63);
 }
 
 /*
