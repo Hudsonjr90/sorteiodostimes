@@ -1,6 +1,6 @@
 {
     "name": "Sorteio da Pelada",
-    "short_name": "Sorteio",
+    "short_name": "Sorteio da Pelada",
     "description": "App para sortear os times a jogarem",
     "lang": "pt-BR",
     "start_url": "/",
