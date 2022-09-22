@@ -1,0 +1,32 @@
+{
+    "name": "Sorteio da Pelada",
+    "short_name": "Sorteio",
+    "description": "App para sortear os times a jogarem",
+    "lang": "pt-BR",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "#123904",
+    "icons": [
+        {
+            "src": "./img/touch/apple-touch-icon-114x114-precomposed.png",
+            "sizes": "114x114",
+            "type": "image/png"
+          },
+          {
+            "src": "./img/touch/apple-touch-icon-144x144-precomposed.png",
+            "sizes": "144x144",
+            "type": "image/png"
+          },
+          {
+            "src": "./img/touch/apple-touch-icon-57x57-precomposed.png",
+            "sizes": "57x57",
+            "type": "image/png"
+          },
+          {
+            "src": "./img/touch/apple-touch-icon-72x72-precomposed.png",
+            "sizes": "72x72",
+            "type": "image/png"
+          }
+    ]
+  }

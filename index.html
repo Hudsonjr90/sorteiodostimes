@@ -2,6 +2,7 @@
 <!--[if IEMobile 7 ]>    <html class="no-js iem7"> <![endif]-->
 <!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js"> <!--<![endif]-->
   <head>
+    <link rel="manifest" href="manifest.json">
     <meta charset="utf-8">
     <title>Sorteio da Pelada</title>
     <meta name="description" content="">
@@ -10,20 +11,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="cleartype" content="on">
 
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/touch/apple-touch-icon-144x144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/touch/apple-touch-icon-114x114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/touch/apple-touch-icon-72x72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="img/touch/apple-touch-icon-57x57-precomposed.png">
-    <link rel="shortcut icon" href="img/logo2.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Sorteio">
+<meta name="apple-mobile-web-app-title" content="Sorteio">
+<meta name="theme-color" content="#123904">
+<meta name="msapplication-navbutton-color" content="#123904">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="msapplication-starturl" content="/https://sorteiodapelada.vercel.app">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="img/touch/apple-touch-icon-144x144-precomposed.png">
-    <meta name="msapplication-TileColor" content="#222222">
+<link rel="icon" type="image/png" sizes="192x192" href="./img/logo2.png">
+<link rel="apple-touch-icon" type="image/png" sizes="192x192" href="./img/logo2.png">
 
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="">
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/touch/apple-touch-icon-144x144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/touch/apple-touch-icon-114x114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/touch/apple-touch-icon-72x72-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="img/touch/apple-touch-icon-57x57-precomposed.png">
 
     <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
 
@@ -76,5 +80,6 @@
     <script src="js/vendor/handlebars.runtime.js"></script>
     <script src="js/vendor/handlebars.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/sw.js"></script>
   </body>
 </html>
