@@ -127,9 +127,7 @@ var TiraTime = (function(){
     var source = "{{#each teams}}<div class='team'><header><h1>Time {{team_number}}</h1></header><ul>{{#each players}}<li>{{name}}<li>{{/each}}</ul></div>{{/each}} <input type='submit' value='Sortear Novamente' class='button' id='re-sort-teams' />";
     var template = Handlebars.compile(source);
     var compiledTemplate = template({ teams: teams });
-    $("#final-step").html(compiledTemplate).show();
-   
-    
+    $("#final-step").html(compiledTemplate).show(); 
   };
 
   function onReSortTeams() {
