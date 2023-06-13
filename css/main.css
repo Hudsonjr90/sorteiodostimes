@@ -84,7 +84,7 @@ textarea {
 /* A hack for HTML5 contenteditable attribute on mobile */
 
 textarea[contenteditable] {
-    -webkit-appearance: none;
+    appearance: none;
 }
 
 /* A workaround for S60 3.x and 5.0 devices which do not animated gif images if
@@ -181,9 +181,6 @@ textarea[contenteditable] {
  * Include this rule to trigger hasLayout and contain floats.
  */
 
-.clearfix {
-    *zoom: 1;
-}
 
 /* ==========================================================================
    EXAMPLE Media Queries for Responsive Design.
@@ -202,7 +199,7 @@ textarea[contenteditable] {
 
 body {
   background: url(../img/logo.png);
-  background-attachment: fixed;
+  background-attachment:inherit;
   background-size: cover;
  
 }
@@ -219,14 +216,17 @@ body {
 }
 
 .title{
-  color: #ffffff;
-  background:#022f00 ;
+  color: #022f00;
+  background-color: #fff;
   font-size: 18px;
-  text-decoration: underline;
+  text-decoration: dotted;
+  display: flex;
+  justify-content: center;
+  position:relative;
 }
 
 .container {
-  max-width: 768px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -324,10 +324,27 @@ body {
 }
 
 .copy{
-  color: rgb(255, 255, 255);
-  border-bottom: 0.3rem solid #ffffff;
-  display: relative;
-  margin-left: 13px;
+  display: flex;
+  justify-content: center;
+  position:relative;
+  margin-top: 200px;
+  color: rgb(12, 5, 80);
+  background-color: #fff;
+  border-bottom: 0.2rem solid #ffffff;
+  margin-left: 1px;
   
 }
 
+@media (max-width: 1000px) {
+  .row-conteudo > div > div {
+    margin-bottom: 4rem;
+  }
+}
+
+@media (max-width: 790px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}  
