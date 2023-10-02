@@ -216,13 +216,10 @@ body {
 }
 
 .title{
-  color: #022f00;
-  background-color: #fff;
-  font-size: 18px;
-  text-decoration: dotted;
-  display: flex;
-  justify-content: center;
-  position:relative;
+  color: #ffff;
+  font-size: 28px;
+  padding: 5px;
+  margin: 35px;
 }
 
 .container {
@@ -328,7 +325,6 @@ body {
   position:relative;
   margin-top: 200px;
   color: rgb(255, 255, 255);
-  border-bottom: 0.2rem solid #ffffff;
   margin-left: 1px;
   
 }
