@@ -13,7 +13,7 @@
 /*@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,500,700);*/
 
 body {
-  font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Sans-serif";
+  font-family: "baloo 2", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Sans-serif";
 }
 
 html,
@@ -30,15 +30,9 @@ body {
 }
 
 a {
-    color: #00e;
-}
-
-a:visited {
-    color: #ffffff;
-}
-
-a:hover {
-    color: rgb(21, 149, 63);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 /*
@@ -218,8 +212,11 @@ body {
 .title{
   color: #ffff;
   font-size: 28px;
+  font-weight: 700;
+  font-family:  "baloo 2", sans-serif;
   padding: 5px;
   margin: 35px;
+
 }
 
 .container {
@@ -234,6 +231,7 @@ body {
 .fields {
   margin: 10px 0;
   overflow: hidden;
+  width: 25rem;
 }
 
 .fields input {
@@ -271,7 +269,7 @@ body {
   color: #fff;
   display: block;
   border-radius: 0;
-  width: 100%;
+  width: 25rem;
   font-weight: bold;
   font-size: 18px;
 }
@@ -294,6 +292,7 @@ body {
 
 .team {
   background: #123904;
+  width: 25rem;
 }
 
 .team header {
@@ -323,7 +322,7 @@ body {
   display: flex;
   justify-content: center;
   position:relative;
-  margin-top: 200px;
+  margin-top: 16rem;
   color: rgb(255, 255, 255);
   margin-left: 1px;
   
