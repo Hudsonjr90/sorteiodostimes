@@ -13,7 +13,7 @@
 /*@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,500,700);*/
 
 body {
-  font-family: "baloo 2", "Ubuntu", "Helvetica Neue", "Helvetica", "Arial", "Sans-serif";
+  font-family: "baloo 2", "Sans-serif";
 }
 
 html,
@@ -198,31 +198,16 @@ body {
  
 }
 
-#header {
-  width: 150px;
-  color: #fff;
-  text-align: center;
-  margin: 20px auto;
-}
-
-#header img {
-  width: 100%;
-}
 
 .title{
   color: #ffff;
-  font-size: 28px;
+  font-size: 2.5rem;
   font-weight: 700;
-  font-family:  "baloo 2", sans-serif;
   padding: 5px;
   margin: 35px;
 
 }
 
-.container {
-  width: 100%;
-  padding: 0 5px;
-}
 
 #first-step {
   margin-top: 110px;
@@ -335,9 +320,19 @@ body {
 }
 
 @media (max-width: 767px) {
-  .container .box {
+  body{
+    background: url(../img/logo2.png);
+    background-attachment:inherit;
+    background-size: contain;
+    
+  }
+ .box {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .title{
+    font-size: 2rem;
   }
 }  
