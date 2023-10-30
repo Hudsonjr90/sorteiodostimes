@@ -335,7 +335,7 @@ body {
   align-items: center;
 }
 
-@media (max-width: 790px) {
+@media (max-width: 767px) {
   .container .box {
     display: flex;
     flex-direction: column;
