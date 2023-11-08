@@ -1,4 +1,4 @@
-# Sorteio da Pelada
+# Sorteio dos times
 
 Um pequeno app web que criei para agilizar o sorteio dos times na pelada que eu jogo. 
 Foi feito pensando numa interface mobile, então acesse pelo seu smartphone. :)
