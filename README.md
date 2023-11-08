@@ -5,7 +5,7 @@ Foi feito pensando numa interface mobile, então acesse pelo seu smartphone. :)
 
 ## Instalação Local
 
-- git clone git@github.com:Hudsonjr90/sorteiodapelada.git
+- git clone git@github.com:Hudsonjr90/sorteiodostimes.git
 
 
 ## Contributing
