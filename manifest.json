@@ -1,7 +1,7 @@
 {
-    "name": "Sorteio da Pelada",
-    "short_name": "Sorteio da Pelada",
-    "description": "App para sortear os times a jogarem",
+    "name": "Sorteio dos times",
+    "short_name": "Sorteio dos times",
+    "description": "App para sortear os times no jogo de futebol",
     "lang": "pt-BR",
     "start_url": "/",
     "display": "standalone",
