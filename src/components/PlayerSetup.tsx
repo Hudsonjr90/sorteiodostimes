@@ -1,5 +1,5 @@
-// components/PlayerSetup.jsx
-import { TextField, Box, Typography } from '@mui/material';
+import { useEffect, useState, type ChangeEvent } from 'react';
+import { TextField, Box, Typography, Paper, Button, Stack } from '@mui/material';
 
 interface PlayerSetupProps {
   playerCount: number;
@@ -9,8 +9,20 @@ interface PlayerSetupProps {
 }
 
 export default function PlayerSetup({ playerCount, setPlayerCount, players, setPlayers }: PlayerSetupProps) {
-  const handleCountChange = (e: { target: { value: string; }; }) => {
-    const count = parseInt(e.target.value);
+  const playersPerPage = 10;
+  const [page, setPage] = useState(0);
+
+  const handleCountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      setPlayerCount(0);
+      setPlayers([]);
+      return;
+    }
+
+    const count = Number(e.target.value);
+    if (Number.isNaN(count) || count < 0) {
+      return;
+    }
     setPlayerCount(count);
     setPlayers(Array.from({ length: count }, (_, i) => players[i] || ''));
   };
@@ -21,55 +33,83 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
     setPlayers(updated);
   };
 
+  const totalPages = Math.max(1, Math.ceil(players.length / playersPerPage));
+  const startIndex = page * playersPerPage;
+  const endIndex = startIndex + playersPerPage;
+  const currentPlayers = players.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    if (page > totalPages - 1) {
+      setPage(totalPages - 1);
+    }
+  }, [page, totalPages]);
+
   return (
-    <Box mb={4} sx={{ backgroundColor: '#00000080', p: 2, borderRadius: 2 }}>
-      <Typography variant="h6" gutterBottom sx={{ color: '#fff' }}>Quantidade de jogadores:</Typography>
+    <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+      <Typography variant="h6" gutterBottom>
+        Quantidade de jogadores
+      </Typography>
       <TextField
-      type="number"
-      inputProps={{ min: 1 }}
-      value={playerCount}
-      onChange={handleCountChange}
-      variant="outlined"
-      size="small"
-      sx={{
-        my: 2,
-        maxWidth: 200,
-        input: { color: '#fff' },
-        '& .MuiOutlinedInput-root': {
-        '& fieldset': { borderColor: '#fff' },
-        '&:hover fieldset': { borderColor: '#fff' },
-        '&.Mui-focused fieldset': { borderColor: '#fff' },
-        },
-        '& .MuiFormHelperText-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root.Mui-focused': { color: '#fff' }, 
-      }}
-      fullWidth
-      helperText="Digite o número de jogadores"
-      />
-      {players.map((name: string, index: number) => (
-      <TextField
-        key={index}
-        label={`Jogador ${index + 1}`}
-        value={name}
-        onChange={(e) => handleNameChange(index, e.target.value)}
+        type="number"
+        inputProps={{ min: 1 }}
+        value={playerCount === 0 ? '' : playerCount}
+        onChange={handleCountChange}
+        onFocus={(e) => e.target.select()}
         variant="outlined"
         size="small"
-        sx={{
-        mb: 1,
-        input: { color: '#fff' },
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': { borderColor: '#fff' },
-          '&:hover fieldset': { borderColor: '#fff' },
-          '&.Mui-focused fieldset': { borderColor: '#fff' },
-        },
-        '& .MuiFormHelperText-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root.Mui-focused': { color: '#fff' }, 
-        }}
+        sx={{ my: 2, maxWidth: 240 }}
         fullWidth
+        helperText="Digite o número total de jogadores"
       />
-      ))}
-    </Box>
+      {players.length > 0 && (
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}
+        >
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+            disabled={page === 0}
+          >
+            Anterior
+          </Button>
+          <Typography variant="body2" color="text.secondary">
+            Página {page + 1} de {totalPages}
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setPage((prev) => Math.min(totalPages - 1, prev + 1))}
+            disabled={page >= totalPages - 1}
+          >
+            Próxima
+          </Button>
+        </Stack>
+      )}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: 1,
+        }}
+      >
+        {currentPlayers.map((name: string, index: number) => {
+          const playerIndex = startIndex + index;
+          return (
+          <TextField
+            key={playerIndex}
+            label={`Jogador ${playerIndex + 1}`}
+            value={name}
+            onChange={(e) => handleNameChange(playerIndex, e.target.value)}
+            variant="outlined"
+            size="small"
+            fullWidth
+          />
+          );
+        })}
+      </Box>
+    </Paper>
   );
 }

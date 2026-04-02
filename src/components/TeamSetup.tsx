@@ -1,37 +1,85 @@
-// components/TeamSetup.jsx
-import { TextField, Box, Typography } from '@mui/material';
+import { type ChangeEvent } from 'react';
+import { TextField, Box, Typography, Paper } from '@mui/material';
 
 interface TeamSetupProps {
   teamCount: number;
   setTeamCount: (value: number) => void;
+  linePlayers: number;
+  setLinePlayers: (value: number) => void;
+  estimatedTeams: number;
 }
 
-export default function TeamSetup({ teamCount, setTeamCount }: TeamSetupProps) {
-  const handleChange = (e: { target: { value: string; }; }) => {
-    setTeamCount(parseInt(e.target.value));
+export default function TeamSetup({
+  teamCount,
+  setTeamCount,
+  linePlayers,
+  setLinePlayers,
+  estimatedTeams,
+}: TeamSetupProps) {
+  const handleLinePlayersChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      return;
+    }
+
+    const value = Number(e.target.value);
+    if (!Number.isNaN(value) && value >= 1) {
+      setLinePlayers(value);
+    }
+  };
+
+  const handleTeamCountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      return;
+    }
+
+    const value = Number(e.target.value);
+    if (Number.isNaN(value) || value < 2) {
+      return;
+    }
+    if (estimatedTeams >= 2) {
+      setTeamCount(Math.min(value, estimatedTeams));
+      return;
+    }
+    setTeamCount(value);
   };
 
   return (
-    <Box mb={4} bgcolor={'#00000080'} p={2} borderRadius={2}>
-      <Typography variant="h6" sx={{ color: '#fff' }}>Quantidade de times:</Typography>
-      <TextField
-        type="number"
-        inputProps={{ min: 2 }}
-        value={teamCount}
-        onChange={handleChange}
-        variant="outlined"
-        size="small"
-        sx={{ mt: 2, maxWidth: 200,  input: { color: '#fff' },
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': { borderColor: '#fff' },
-          '&:hover fieldset': { borderColor: '#fff' },
-          '&.Mui-focused fieldset': { borderColor: '#fff' },
-        },
-        '& .MuiFormHelperText-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root': { color: '#fff' }, 
-        '& .MuiInputLabel-root.Mui-focused': { color: '#fff' },  }}
-        fullWidth
-      />
-    </Box>
+    <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+      <Typography variant="h6" gutterBottom>
+        Configuração da pelada
+      </Typography>
+
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+        <TextField
+          type="number"
+          label="Jogadores na linha"
+          inputProps={{ min: 1 }}
+          value={linePlayers}
+          onChange={handleLinePlayersChange}
+          onFocus={(e) => e.target.select()}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: '100%', sm: 240 } }}
+          helperText="Goleiro e contado separadamente"
+        />
+
+        <TextField
+          type="number"
+          label="Quantidade de times"
+          inputProps={{ min: 2, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
+          value={teamCount}
+          onChange={handleTeamCountChange}
+          onFocus={(e) => e.target.select()}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: '100%', sm: 240 } }}
+          helperText={
+            estimatedTeams >= 2
+              ? `Limite estimado: ${estimatedTeams} times`
+              : 'Preencha mais jogadores para liberar o sorteio'
+          }
+        />
+      </Box>
+    </Paper>
   );
 }
