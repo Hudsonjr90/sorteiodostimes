@@ -25,7 +25,9 @@ import TeamSetup from './components/TeamSetup';
 import TeamDraw from './components/TeamDraw';
 import ChampionshipSetup from './components/ChampionshipSetup';
 import DonationModal from './components/DonationModal';
+import InstallBanner from './components/InstallBanner';
 import { dismissDonationPrompt, useDonationPrompt } from './hooks/useDonationPrompt';
+import { useInstallPrompt } from './hooks/useInstallPrompt';
 
 type AppMode = 'pelada' | 'campeonato';
 type PeladaView = 'config' | 'resultado';
@@ -46,6 +48,7 @@ export default function App() {
 
     const [openDonationModal, setOpenDonationModal] = useState(false);
     const { shouldShow: shouldShowDonationModal } = useDonationPrompt(playerCount);
+    const installPrompt = useInstallPrompt();
 
   useEffect(() => {
     try {
@@ -427,6 +430,14 @@ export default function App() {
         >
           <FavoriteBorderRounded />
         </Fab>
+
+        {installPrompt.visible && (
+          <InstallBanner
+            showIOSHint={installPrompt.showIOSHint}
+            onInstall={installPrompt.install}
+            onDismiss={installPrompt.dismiss}
+          />
+        )}
 
         <DonationModal
           open={openDonationModal}
