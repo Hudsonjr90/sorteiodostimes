@@ -50,6 +50,7 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
         Quantidade de jogadores
       </Typography>
       <TextField
+        label="Número total de jogadores"
         type="number"
         inputProps={{ min: 1 }}
         value={playerCount === 0 ? '' : playerCount}

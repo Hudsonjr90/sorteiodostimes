@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   CssBaseline,
+  Fab,
   FormControlLabel,
   Paper,
   Switch,
@@ -17,10 +18,13 @@ import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
 import LightModeRounded from '@mui/icons-material/LightModeRounded';
 import SportsSoccerRounded from '@mui/icons-material/SportsSoccerRounded';
 import EmojiEventsRounded from '@mui/icons-material/EmojiEventsRounded';
+import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded';
 import PlayerSetup from './components/PlayerSetup';
 import TeamSetup from './components/TeamSetup';
 import TeamDraw from './components/TeamDraw';
 import ChampionshipSetup from './components/ChampionshipSetup';
+import DonationModal from './components/DonationModal';
+import { dismissDonationPrompt, useDonationPrompt } from './hooks/useDonationPrompt';
 
 type AppMode = 'pelada' | 'campeonato';
 type PeladaView = 'config' | 'resultado';
@@ -37,6 +41,9 @@ export default function App() {
   const [linePlayers, setLinePlayers] = useState(0);
   const [teamCount, setTeamCount] = useState(0);
   const [teams, setTeams] = useState<string[][]>([]);
+
+    const [openDonationModal, setOpenDonationModal] = useState(false);
+    const { shouldShow: shouldShowDonationModal } = useDonationPrompt(playerCount);
 
   useEffect(() => {
     try {
@@ -98,6 +105,12 @@ export default function App() {
     };
     localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(payload));
   }, [themeMode, appMode, playerCount, players, linePlayers, teamCount, teams]);
+
+    useEffect(() => {
+      if (shouldShowDonationModal) {
+        setOpenDonationModal(true);
+      }
+    }, [shouldShowDonationModal]);
 
   const theme = useMemo(
     () =>
@@ -198,11 +211,23 @@ export default function App() {
               }}
             >
               <Box>
-                <Typography variant="h3" sx={{ lineHeight: 1 }}>
-                  Sorteio dos Times
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Typography variant="h3" sx={{ lineHeight: 1 }}>
+                    Fut sorteio
+                  </Typography>
+                  <Fab
+                    size="small"
+                    color="primary"
+                    aria-label="apoiar-projeto"
+                    onClick={() => setOpenDonationModal(true)}
+                    sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+                    title="Apoiar este projeto"
+                  >
+                    <FavoriteBorderRounded fontSize="small" />
+                  </Fab>
+                </Box>
                 <Typography variant="body1" color="text.secondary">
-                  Escolha entre pelada casual ou campeonato com chaveamento.
+                  Escolha pelada casual ou campeonato.
                 </Typography>
               </Box>
 
@@ -309,6 +334,29 @@ export default function App() {
             © 2026 Hudson Kennedy
           </Typography>
         </Container>
+
+        <Fab
+          color="primary"
+          aria-label="apoiar-projeto"
+          onClick={() => setOpenDonationModal(true)}
+          sx={{
+            display: { xs: 'none', sm: 'inline-flex' },
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+          }}
+          title="Apoiar este projeto"
+        >
+          <FavoriteBorderRounded />
+        </Fab>
+
+        <DonationModal
+          open={openDonationModal}
+          onClose={() => {
+            setOpenDonationModal(false);
+            dismissDonationPrompt();
+          }}
+        />
       </Box>
     </ThemeProvider>
   );

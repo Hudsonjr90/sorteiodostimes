@@ -55,8 +55,8 @@ export default function TeamSetup({
         <TextField
           type="number"
           label="Jogadores na linha"
-          inputProps={{ min: 0 }}
-          value={linePlayers}
+          inputProps={{ min: 1 }}
+          value={linePlayers === 0 ? '' : linePlayers}
           onChange={handleLinePlayersChange}
           onFocus={(e) => e.target.select()}
           variant="outlined"
@@ -68,8 +68,8 @@ export default function TeamSetup({
         <TextField
           type="number"
           label="Quantidade de times"
-          inputProps={{ min: 0, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
-          value={teamCount}
+          inputProps={{ min: 1, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
+          value={teamCount === 0 ? '' : teamCount}
           onChange={handleTeamCountChange}
           onFocus={(e) => e.target.select()}
           variant="outlined"

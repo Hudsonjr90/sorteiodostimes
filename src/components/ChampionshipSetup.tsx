@@ -145,7 +145,7 @@ function createInitialBracket(teams: string[]): Match[][] {
 }
 
 export default function ChampionshipSetup() {
-  const teamsPerPage = 10;
+  const teamsPerPage = 8;
 
   const [view, setView] = useState<ChampionshipView>('config');
   const [teamCount, setTeamCount] = useState(8);
@@ -318,7 +318,7 @@ export default function ChampionshipSetup() {
               helperText="Mínimo 2 e máximo 32"
             />
 
-            {teamNames.length > 0 && (
+            {totalTeamPages > 1 && (
               <Stack
                 direction="row"
                 spacing={1}
