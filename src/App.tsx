@@ -34,8 +34,8 @@ export default function App() {
 
   const [playerCount, setPlayerCount] = useState(0);
   const [players, setPlayers] = useState<string[]>([]);
-  const [linePlayers, setLinePlayers] = useState(4);
-  const [teamCount, setTeamCount] = useState(2);
+  const [linePlayers, setLinePlayers] = useState(0);
+  const [teamCount, setTeamCount] = useState(0);
   const [teams, setTeams] = useState<string[][]>([]);
 
   useEffect(() => {
@@ -66,10 +66,10 @@ export default function App() {
       if (Array.isArray(parsed.players)) {
         setPlayers(parsed.players.filter((item): item is string => typeof item === 'string'));
       }
-      if (typeof parsed.linePlayers === 'number' && parsed.linePlayers >= 1) {
+      if (typeof parsed.linePlayers === 'number' && parsed.linePlayers >= 0) {
         setLinePlayers(parsed.linePlayers);
       }
-      if (typeof parsed.teamCount === 'number' && parsed.teamCount >= 2) {
+      if (typeof parsed.teamCount === 'number' && parsed.teamCount >= 0) {
         setTeamCount(parsed.teamCount);
       }
       if (Array.isArray(parsed.teams)) {
@@ -132,18 +132,19 @@ export default function App() {
   );
 
   const filledPlayers = players.map((p) => p.trim()).filter(Boolean);
-  const estimatedTeams = Math.floor(filledPlayers.length / (linePlayers + 1));
-  const canDraw = estimatedTeams >= 2 && teamCount >= 2;
+  const effectiveLinePlayers = linePlayers > 0 ? linePlayers : 1;
+  const estimatedTeams = Math.floor(filledPlayers.length / (effectiveLinePlayers + 1));
+  const canDraw = linePlayers > 0 && teamCount >= 2 && estimatedTeams >= teamCount && estimatedTeams >= 2;
 
   useEffect(() => {
-    if (estimatedTeams < 2) {
-      setTeamCount(2);
+    if (linePlayers === 0 || estimatedTeams < 2) {
+      setTeamCount(0);
       return;
     }
     if (teamCount > estimatedTeams) {
       setTeamCount(estimatedTeams);
     }
-  }, [estimatedTeams, teamCount]);
+  }, [estimatedTeams, teamCount, linePlayers]);
 
   const handleDrawTeams = () => {
     if (!canDraw) {
@@ -265,18 +266,18 @@ export default function App() {
 
                 {peladaView === 'config' && (
                   <>
-                    <PlayerSetup
-                      playerCount={playerCount}
-                      setPlayerCount={setPlayerCount}
-                      players={players}
-                      setPlayers={setPlayers}
-                    />
                     <TeamSetup
                       teamCount={teamCount}
                       setTeamCount={setTeamCount}
                       linePlayers={linePlayers}
                       setLinePlayers={setLinePlayers}
                       estimatedTeams={estimatedTeams}
+                    />
+                    <PlayerSetup
+                      playerCount={playerCount}
+                      setPlayerCount={setPlayerCount}
+                      players={players}
+                      setPlayers={setPlayers}
                     />
                     <Button
                       variant="contained"
@@ -291,7 +292,7 @@ export default function App() {
                 {peladaView === 'resultado' && (
                   <TeamDraw
                     teams={teams}
-                    helperText={`Com os jogadores preenchidos e ${linePlayers} na linha + goleiro, voce consegue montar ate ${estimatedTeams} times.`}
+                    helperText={linePlayers > 0 ? `Com os jogadores preenchidos e ${linePlayers} na linha + goleiro, você consegue montar até ${estimatedTeams} times.` : 'Preencha as configurações para sortear'}
                   />
                 )}
               </>

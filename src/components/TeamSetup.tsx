@@ -18,22 +18,24 @@ export default function TeamSetup({
 }: TeamSetupProps) {
   const handleLinePlayersChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
+      setLinePlayers(0);
       return;
     }
 
     const value = Number(e.target.value);
-    if (!Number.isNaN(value) && value >= 1) {
+    if (!Number.isNaN(value) && value >= 0) {
       setLinePlayers(value);
     }
   };
 
   const handleTeamCountChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
+      setTeamCount(0);
       return;
     }
 
     const value = Number(e.target.value);
-    if (Number.isNaN(value) || value < 2) {
+    if (Number.isNaN(value) || value < 0) {
       return;
     }
     if (estimatedTeams >= 2) {
@@ -53,20 +55,20 @@ export default function TeamSetup({
         <TextField
           type="number"
           label="Jogadores na linha"
-          inputProps={{ min: 1 }}
+          inputProps={{ min: 0 }}
           value={linePlayers}
           onChange={handleLinePlayersChange}
           onFocus={(e) => e.target.select()}
           variant="outlined"
           size="small"
           sx={{ width: { xs: '100%', sm: 240 } }}
-          helperText="Goleiro e contado separadamente"
+          helperText="Goleiro é contado separadamente"
         />
 
         <TextField
           type="number"
           label="Quantidade de times"
-          inputProps={{ min: 2, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
+          inputProps={{ min: 0, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
           value={teamCount}
           onChange={handleTeamCountChange}
           onFocus={(e) => e.target.select()}
@@ -74,9 +76,11 @@ export default function TeamSetup({
           size="small"
           sx={{ width: { xs: '100%', sm: 240 } }}
           helperText={
-            estimatedTeams >= 2
-              ? `Limite estimado: ${estimatedTeams} times`
-              : 'Preencha mais jogadores para liberar o sorteio'
+            linePlayers === 0
+              ? 'Configure os jogadores na linha primeiro'
+              : estimatedTeams >= 2
+                ? `Limite estimado: ${estimatedTeams} times`
+                : 'Preencha mais jogadores para liberar o sorteio'
           }
         />
       </Box>
