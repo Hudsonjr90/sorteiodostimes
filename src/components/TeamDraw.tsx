@@ -53,6 +53,7 @@ const TeamDraw: React.FC<TeamDrawProps> = ({ teams, helperText }) => {
             size="small"
             onClick={() => handleExport('png')}
             disabled={isExporting}
+            sx={{ textTransform: 'none' }}
           >
             Exportar PNG
           </Button>
@@ -61,6 +62,7 @@ const TeamDraw: React.FC<TeamDrawProps> = ({ teams, helperText }) => {
             size="small"
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
+            sx={{ textTransform: 'none' }}
           >
             Exportar PDF
           </Button>

@@ -55,10 +55,10 @@ export default function DonationModal({ open, onClose }: DonationModalProps) {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleDonate} variant="contained">
-          Ir para pagamento
+        <Button onClick={handleDonate} variant="contained" sx={{ textTransform: 'none' }}>
+          Fazer Doação
         </Button>
-        <Button onClick={handleClose} variant="outlined">
+        <Button onClick={handleClose} variant="outlined" sx={{ textTransform: 'none' }}>
           Fechar
         </Button>
       </DialogActions>

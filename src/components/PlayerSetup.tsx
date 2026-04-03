@@ -48,6 +48,7 @@ export default function PlayerSetup({ playerCount, players, setPlayers }: Player
             size="small"
             onClick={() => setPage((prev) => Math.max(0, prev - 1))}
             disabled={page === 0}
+            sx={{ textTransform: 'none' }}
           >
             Anterior
           </Button>
@@ -59,6 +60,7 @@ export default function PlayerSetup({ playerCount, players, setPlayers }: Player
             size="small"
             onClick={() => setPage((prev) => Math.min(totalPages - 1, prev + 1))}
             disabled={page >= totalPages - 1}
+            sx={{ textTransform: 'none' }}
           >
             Próxima
           </Button>

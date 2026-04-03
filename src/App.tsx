@@ -343,6 +343,7 @@ export default function App() {
                           variant="contained"
                           onClick={handleDrawAndGoToResult}
                           disabled={!canDraw}
+                          sx={{ textTransform: 'none' }}
                         >
                           Sortear times e ver resultado
                         </Button>
