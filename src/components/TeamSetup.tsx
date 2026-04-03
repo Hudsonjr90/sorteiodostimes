@@ -7,6 +7,7 @@ interface TeamSetupProps {
   linePlayers: number;
   setLinePlayers: (value: number) => void;
   estimatedTeams: number;
+  countGoalkeeper: boolean;
 }
 
 export default function TeamSetup({
@@ -15,15 +16,15 @@ export default function TeamSetup({
   linePlayers,
   setLinePlayers,
   estimatedTeams,
+  countGoalkeeper,
 }: TeamSetupProps) {
   const handleLinePlayersChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       setLinePlayers(0);
       return;
     }
-
     const value = Number(e.target.value);
-    if (!Number.isNaN(value) && value >= 0) {
+    if (Number.isNaN(value) === false && value >= 0) {
       setLinePlayers(value);
     }
   };
@@ -33,7 +34,6 @@ export default function TeamSetup({
       setTeamCount(0);
       return;
     }
-
     const value = Number(e.target.value);
     if (Number.isNaN(value) || value < 0) {
       return;
@@ -45,6 +45,8 @@ export default function TeamSetup({
     setTeamCount(value);
   };
 
+  const playersPerTeam = countGoalkeeper ? linePlayers + 1 : linePlayers;
+
   return (
     <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
       <Typography variant="h6" gutterBottom>
@@ -54,7 +56,7 @@ export default function TeamSetup({
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
         <TextField
           type="number"
-          label="Jogadores na linha"
+          label="Jogadores na linha por time"
           inputProps={{ min: 1 }}
           value={linePlayers === 0 ? '' : linePlayers}
           onChange={handleLinePlayersChange}
@@ -62,7 +64,13 @@ export default function TeamSetup({
           variant="outlined"
           size="small"
           sx={{ width: { xs: '100%', sm: 240 } }}
-          helperText="Goleiro é contado separadamente"
+          helperText={
+            linePlayers === 0
+              ? 'Quantos jogadores de linha cada time terá'
+              : countGoalkeeper
+                ? `${linePlayers} na linha + 1 goleiro = ${playersPerTeam} por time`
+                : `${linePlayers} jogadores por time (sem goleiro fixo)`
+          }
         />
 
         <TextField
@@ -79,8 +87,8 @@ export default function TeamSetup({
             linePlayers === 0
               ? 'Configure os jogadores na linha primeiro'
               : estimatedTeams >= 2
-                ? `Limite estimado: ${estimatedTeams} times`
-                : 'Preencha mais jogadores para liberar o sorteio'
+                ? `Máximo possível: ${estimatedTeams} times`
+                : 'Jogadores insuficientes para montar times'
           }
         />
       </Box>

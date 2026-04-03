@@ -41,6 +41,7 @@ export default function App() {
   const [players, setPlayers] = useState<string[]>([]);
   const [linePlayers, setLinePlayers] = useState(0);
   const [teamCount, setTeamCount] = useState(0);
+  const [countGoalkeeper, setCountGoalkeeper] = useState(false);
   const [teams, setTeams] = useState<string[][]>([]);
 
     const [openDonationModal, setOpenDonationModal] = useState(false);
@@ -59,6 +60,7 @@ export default function App() {
         players?: string[];
         linePlayers?: number;
         teamCount?: number;
+         countGoalkeeper?: boolean;
         teams?: string[][];
       };
 
@@ -79,6 +81,9 @@ export default function App() {
       }
       if (typeof parsed.teamCount === 'number' && parsed.teamCount >= 0) {
         setTeamCount(parsed.teamCount);
+        }
+        if (typeof parsed.countGoalkeeper === 'boolean') {
+          setCountGoalkeeper(parsed.countGoalkeeper);
       }
       if (Array.isArray(parsed.teams)) {
         setTeams(
@@ -102,10 +107,11 @@ export default function App() {
       players,
       linePlayers,
       teamCount,
+      countGoalkeeper,
       teams,
     };
     localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(payload));
-  }, [themeMode, appMode, playerCount, players, linePlayers, teamCount, teams]);
+  }, [themeMode, appMode, playerCount, players, linePlayers, teamCount, countGoalkeeper, teams]);
 
     useEffect(() => {
       if (shouldShowDonationModal) {
@@ -141,14 +147,32 @@ export default function App() {
         typography: {
           fontFamily: '"Baloo 2", "Roboto", sans-serif',
         },
+        components: {
+          MuiTextField: {
+            styleOverrides: {
+              root: {
+                '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
+                  { WebkitAppearance: 'none', margin: 0 },
+                '& input[type=number]': { MozAppearance: 'textfield' },
+              },
+            },
+          },
+        },
       }),
     [themeMode],
   );
 
   const filledPlayers = players.map((p) => p.trim()).filter(Boolean);
   const effectiveLinePlayers = linePlayers > 0 ? linePlayers : 1;
-  const estimatedTeams = Math.floor(filledPlayers.length / (effectiveLinePlayers + 1));
-  const canDraw = linePlayers > 0 && teamCount >= 2 && estimatedTeams >= teamCount && estimatedTeams >= 2;
+  const playersPerTeam = countGoalkeeper ? effectiveLinePlayers + 1 : effectiveLinePlayers;
+  const estimatedTeams = Math.floor(playerCount / playersPerTeam);
+  const teamSize = countGoalkeeper ? linePlayers + 1 : linePlayers;
+  const canDraw =
+    linePlayers > 0 &&
+    teamCount >= 2 &&
+    estimatedTeams >= teamCount &&
+    estimatedTeams >= 2 &&
+    filledPlayers.length >= teamCount * teamSize;
 
   useEffect(() => {
     if (linePlayers === 0 || estimatedTeams < 2) {
@@ -323,6 +347,21 @@ export default function App() {
                         fullWidth
                         helperText="Digite o total para liberar a configuração"
                       />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={countGoalkeeper}
+                            onChange={(e) => setCountGoalkeeper(e.target.checked)}
+                            size="small"
+                          />
+                        }
+                        label={
+                          <Typography variant="body2">
+                            {countGoalkeeper ? 'Com goleiro fixo por time' : 'Sem goleiro fixo (rotativo)'}
+                          </Typography>
+                        }
+                        sx={{ mt: 1.5, display: 'flex', alignItems: 'center' }}
+                      />
                     </Paper>
 
                     {playerCount > 0 && (
@@ -333,6 +372,7 @@ export default function App() {
                           linePlayers={linePlayers}
                           setLinePlayers={setLinePlayers}
                           estimatedTeams={estimatedTeams}
+                          countGoalkeeper={countGoalkeeper}
                         />
                         <PlayerSetup
                           playerCount={playerCount}
@@ -355,7 +395,7 @@ export default function App() {
                 {peladaView === 'resultado' && (
                   <TeamDraw
                     teams={teams}
-                    helperText={linePlayers > 0 ? `Com os jogadores preenchidos e ${linePlayers} na linha + goleiro, você consegue montar até ${estimatedTeams} times.` : 'Preencha as configurações para sortear'}
+                    helperText={linePlayers > 0 ? `${teamCount} times de ${linePlayers} na linha${countGoalkeeper ? ' + goleiro' : ''} (${teamSize} por time)` : 'Preencha as configurações para sortear'}
                   />
                 )}
               </>
