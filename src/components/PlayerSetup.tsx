@@ -1,31 +1,15 @@
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { TextField, Box, Typography, Paper, Button, Stack } from '@mui/material';
 
 interface PlayerSetupProps {
   playerCount: number;
-  setPlayerCount: (count: number) => void;
   players: string[];
   setPlayers: (players: string[]) => void;
 }
 
-export default function PlayerSetup({ playerCount, setPlayerCount, players, setPlayers }: PlayerSetupProps) {
+export default function PlayerSetup({ playerCount, players, setPlayers }: PlayerSetupProps) {
   const playersPerPage = 10;
   const [page, setPage] = useState(0);
-
-  const handleCountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === '') {
-      setPlayerCount(0);
-      setPlayers([]);
-      return;
-    }
-
-    const count = Number(e.target.value);
-    if (Number.isNaN(count) || count < 0) {
-      return;
-    }
-    setPlayerCount(count);
-    setPlayers(Array.from({ length: count }, (_, i) => players[i] || ''));
-  };
 
   const handleNameChange = (index: number, value: string) => {
     const updated = [...players];
@@ -35,8 +19,7 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
 
   const totalPages = Math.max(1, Math.ceil(players.length / playersPerPage));
   const startIndex = page * playersPerPage;
-  const endIndex = startIndex + playersPerPage;
-  const currentPlayers = players.slice(startIndex, endIndex);
+  const currentPlayers = players.slice(startIndex, startIndex + playersPerPage);
 
   useEffect(() => {
     if (page > totalPages - 1) {
@@ -44,25 +27,17 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
     }
   }, [page, totalPages]);
 
+  if (playerCount === 0 || players.length === 0) {
+    return null;
+  }
+
   return (
     <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Quantidade de jogadores
+        Nome dos jogadores
       </Typography>
-      <TextField
-        label="Número total de jogadores"
-        type="number"
-        inputProps={{ min: 1 }}
-        value={playerCount === 0 ? '' : playerCount}
-        onChange={handleCountChange}
-        onFocus={(e) => e.target.select()}
-        variant="outlined"
-        size="small"
-        sx={{ my: 2, maxWidth: 240 }}
-        fullWidth
-        helperText="Digite o número total de jogadores"
-      />
-      {players.length > 0 && (
+
+      {totalPages > 1 && (
         <Stack
           direction="row"
           spacing={1}
@@ -89,6 +64,7 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
           </Button>
         </Stack>
       )}
+
       <Box
         sx={{
           display: 'grid',
@@ -99,15 +75,15 @@ export default function PlayerSetup({ playerCount, setPlayerCount, players, setP
         {currentPlayers.map((name: string, index: number) => {
           const playerIndex = startIndex + index;
           return (
-          <TextField
-            key={playerIndex}
-            label={`Jogador ${playerIndex + 1}`}
-            value={name}
-            onChange={(e) => handleNameChange(playerIndex, e.target.value)}
-            variant="outlined"
-            size="small"
-            fullWidth
-          />
+            <TextField
+              key={playerIndex}
+              label={`Jogador ${playerIndex + 1}`}
+              value={name}
+              onChange={(e) => handleNameChange(playerIndex, e.target.value)}
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
           );
         })}
       </Box>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   Switch,
   Tab,
   Tabs,
+  TextField,
   Typography,
   createTheme,
   ThemeProvider,
@@ -176,6 +177,20 @@ export default function App() {
     setTeams(result);
   };
 
+  const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      setPlayerCount(0);
+      setPlayers([]);
+      return;
+    }
+    const count = Number(e.target.value);
+    if (Number.isNaN(count) || count < 1) {
+      return;
+    }
+    setPlayerCount(count);
+    setPlayers((prev) => Array.from({ length: count }, (_, i) => prev[i] || ''));
+  };
+
   const handleDrawAndGoToResult = () => {
     handleDrawTeams();
     if (canDraw) {
@@ -291,26 +306,48 @@ export default function App() {
 
                 {peladaView === 'config' && (
                   <>
-                    <TeamSetup
-                      teamCount={teamCount}
-                      setTeamCount={setTeamCount}
-                      linePlayers={linePlayers}
-                      setLinePlayers={setLinePlayers}
-                      estimatedTeams={estimatedTeams}
-                    />
-                    <PlayerSetup
-                      playerCount={playerCount}
-                      setPlayerCount={setPlayerCount}
-                      players={players}
-                      setPlayers={setPlayers}
-                    />
-                    <Button
-                      variant="contained"
-                      onClick={handleDrawAndGoToResult}
-                      disabled={!canDraw}
-                    >
-                      Sortear times e ver resultado
-                    </Button>
+                    <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                      <Typography variant="h6" gutterBottom>
+                        Quantos jogadores vão jogar?
+                      </Typography>
+                      <TextField
+                        label="Número total de jogadores"
+                        type="number"
+                        inputProps={{ min: 1 }}
+                        value={playerCount === 0 ? '' : playerCount}
+                        onChange={handleCountChange}
+                        onFocus={(e) => e.target.select()}
+                        variant="outlined"
+                        size="small"
+                        sx={{ mt: 1, maxWidth: 240 }}
+                        fullWidth
+                        helperText="Digite o total para liberar a configuração"
+                      />
+                    </Paper>
+
+                    {playerCount > 0 && (
+                      <>
+                        <TeamSetup
+                          teamCount={teamCount}
+                          setTeamCount={setTeamCount}
+                          linePlayers={linePlayers}
+                          setLinePlayers={setLinePlayers}
+                          estimatedTeams={estimatedTeams}
+                        />
+                        <PlayerSetup
+                          playerCount={playerCount}
+                          players={players}
+                          setPlayers={setPlayers}
+                        />
+                        <Button
+                          variant="contained"
+                          onClick={handleDrawAndGoToResult}
+                          disabled={!canDraw}
+                        >
+                          Sortear times e ver resultado
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
 
