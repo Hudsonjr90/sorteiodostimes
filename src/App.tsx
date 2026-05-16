@@ -14,6 +14,7 @@ import {
   Typography,
   createTheme,
   ThemeProvider,
+  Stack,
 } from '@mui/material';
 import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
 import LightModeRounded from '@mui/icons-material/LightModeRounded';
@@ -21,6 +22,7 @@ import SportsSoccerRounded from '@mui/icons-material/SportsSoccerRounded';
 import EmojiEventsRounded from '@mui/icons-material/EmojiEventsRounded';
 import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded';
 import PlayerSetup from './components/PlayerSetup';
+import PlayerListPaste from './components/PlayerListPaste';
 import TeamSetup from './components/TeamSetup';
 import TeamDraw from './components/TeamDraw';
 import ChampionshipSetup from './components/ChampionshipSetup';
@@ -35,6 +37,7 @@ type PeladaView = 'config' | 'resultado';
 const APP_STORAGE_KEY = 'sorteio.app.v1';
 
 export default function App() {
+  const [playerInputMode, setPlayerInputMode] = useState<'individual' | 'paste'>('individual');
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
   const [appMode, setAppMode] = useState<AppMode>('pelada');
   const [peladaView, setPeladaView] = useState<PeladaView>('config');
@@ -377,19 +380,47 @@ export default function App() {
                           estimatedTeams={estimatedTeams}
                           countGoalkeeper={countGoalkeeper}
                         />
-                        <PlayerSetup
-                          playerCount={playerCount}
-                          players={players}
-                          setPlayers={setPlayers}
-                        />
-                        <Button
-                          variant="contained"
-                          onClick={handleDrawAndGoToResult}
-                          disabled={!canDraw}
-                          sx={{ textTransform: 'none' }}
-                        >
-                          Sortear times e ver resultado
-                        </Button>
+                        <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                          <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+                            <Button
+                              variant={playerInputMode === 'individual' ? 'contained' : 'outlined'}
+                              onClick={() => setPlayerInputMode('individual')}
+                            >
+                              Adicionar individualmente
+                            </Button>
+                            <Button
+                              variant={playerInputMode === 'paste' ? 'contained' : 'outlined'}
+                              onClick={() => setPlayerInputMode('paste')}
+                            >
+                              Colar lista de nomes
+                            </Button>
+                          </Stack>
+                          {playerInputMode === 'individual' ? (
+                            <PlayerSetup
+                              playerCount={playerCount}
+                              players={players}
+                              setPlayers={setPlayers}
+                            />
+                          ) : (
+                            <PlayerListPaste
+                              maxPlayers={playerCount}
+                              onSubmit={names => {
+                                setPlayers(names);
+                                setTimeout(() => handleDrawAndGoToResult(), 100);
+                              }}
+                            />
+                          )}
+                        </Paper>
+                        {playerInputMode === 'individual' && (
+                          <Button
+                            variant="contained"
+                            onClick={handleDrawAndGoToResult}
+                            disabled={!canDraw}
+                            sx={{ textTransform: 'none' }}
+                          >
+                            Sortear times e ver resultado
+                          </Button>
+                        )}
                       </>
                     )}
                   </>
