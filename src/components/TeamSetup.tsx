@@ -6,8 +6,6 @@ interface TeamSetupProps {
   setTeamCount: (value: number) => void;
   linePlayers: number;
   setLinePlayers: (value: number) => void;
-  estimatedTeams: number;
-  countGoalkeeper: boolean;
 }
 
 export default function TeamSetup({
@@ -15,8 +13,6 @@ export default function TeamSetup({
   setTeamCount,
   linePlayers,
   setLinePlayers,
-  estimatedTeams,
-  countGoalkeeper,
 }: TeamSetupProps) {
   const handleLinePlayersChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
@@ -24,7 +20,7 @@ export default function TeamSetup({
       return;
     }
     const value = Number(e.target.value);
-    if (Number.isNaN(value) === false && value >= 0) {
+    if (Number.isInteger(value) && value > 0) {
       setLinePlayers(value);
     }
   };
@@ -35,17 +31,10 @@ export default function TeamSetup({
       return;
     }
     const value = Number(e.target.value);
-    if (Number.isNaN(value) || value < 0) {
-      return;
+    if (Number.isInteger(value) && value >= 2) {
+      setTeamCount(value);
     }
-    if (estimatedTeams >= 2) {
-      setTeamCount(Math.min(value, estimatedTeams));
-      return;
-    }
-    setTeamCount(value);
   };
-
-  const playersPerTeam = countGoalkeeper ? linePlayers + 1 : linePlayers;
 
   return (
     <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
@@ -66,30 +55,22 @@ export default function TeamSetup({
           sx={{ width: { xs: '100%', sm: 240 } }}
           helperText={
             linePlayers === 0
-              ? 'Quantos jogadores de linha cada time terá'
-              : countGoalkeeper
-                ? `${linePlayers} na linha + 1 goleiro = ${playersPerTeam} por time`
-                : `${linePlayers} jogadores por time (sem goleiro fixo)`
+              ? 'Quantidade de jogadores de linha em cada time'
+              : `Até ${linePlayers} jogadores por time; goleiros ficam fora do sorteio`
           }
         />
 
         <TextField
           type="number"
           label="Quantidade de times"
-          inputProps={{ min: 1, max: estimatedTeams >= 2 ? estimatedTeams : undefined }}
+          inputProps={{ min: 2 }}
           value={teamCount === 0 ? '' : teamCount}
           onChange={handleTeamCountChange}
           onFocus={(e) => e.target.select()}
           variant="outlined"
           size="small"
           sx={{ width: { xs: '100%', sm: 240 } }}
-          helperText={
-            linePlayers === 0
-              ? 'Configure os jogadores na linha primeiro'
-              : estimatedTeams >= 2
-                ? `Máximo possível: ${estimatedTeams} times`
-                : 'Jogadores insuficientes para montar times'
-          }
+          helperText="Escolha quantos times serão sorteados"
         />
       </Box>
     </Paper>

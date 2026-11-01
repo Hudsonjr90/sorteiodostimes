@@ -2,24 +2,25 @@ import { useEffect, useState } from 'react';
 import { TextField, Box, Typography, Paper, Button, Stack } from '@mui/material';
 
 interface PlayerSetupProps {
-  playerCount: number;
+  playerSlots: number;
   players: string[];
   setPlayers: (players: string[]) => void;
 }
 
-export default function PlayerSetup({ playerCount, players, setPlayers }: PlayerSetupProps) {
+export default function PlayerSetup({ playerSlots, players, setPlayers }: PlayerSetupProps) {
   const playersPerPage = 10;
   const [page, setPage] = useState(0);
 
   const handleNameChange = (index: number, value: string) => {
-    const updated = [...players];
+    const updated = Array.from({ length: playerSlots }, (_, i) => players[i] || '');
     updated[index] = value;
     setPlayers(updated);
   };
 
-  const totalPages = Math.max(1, Math.ceil(players.length / playersPerPage));
+  const totalPages = Math.max(1, Math.ceil(playerSlots / playersPerPage));
   const startIndex = page * playersPerPage;
-  const currentPlayers = players.slice(startIndex, startIndex + playersPerPage);
+  const currentPlayers = Array.from({ length: playerSlots }, (_, i) => players[i] || '')
+    .slice(startIndex, startIndex + playersPerPage);
 
   useEffect(() => {
     if (page > totalPages - 1) {
@@ -27,7 +28,7 @@ export default function PlayerSetup({ playerCount, players, setPlayers }: Player
     }
   }, [page, totalPages]);
 
-  if (playerCount === 0 || players.length === 0) {
+  if (playerSlots === 0) {
     return null;
   }
 

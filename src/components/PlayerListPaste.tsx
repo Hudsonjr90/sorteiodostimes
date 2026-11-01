@@ -4,9 +4,14 @@ import { Paper, Typography, TextField, Button, Stack, Alert } from '@mui/materia
 interface PlayerListPasteProps {
   onSubmit: (names: string[]) => void;
   maxPlayers: number;
+  isConfigured: boolean;
 }
 
-export default function PlayerListPaste({ onSubmit, maxPlayers }: PlayerListPasteProps) {
+export default function PlayerListPaste({
+  onSubmit,
+  maxPlayers,
+  isConfigured,
+}: PlayerListPasteProps) {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
 
@@ -33,8 +38,17 @@ export default function PlayerListPaste({ onSubmit, maxPlayers }: PlayerListPast
         Colar lista de nomes
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Cole aqui a lista copiada do WhatsApp ou outro app. Cada nome deve estar em uma linha.
+        Cole a lista com um nome por linha. Se faltarem jogadores, os primeiros times serão preenchidos
+        e o último ficará incompleto.
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Capacidade máxima para esta configuração: {maxPlayers} jogadores.
+      </Typography>
+      {!isConfigured && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Configure pelo menos 2 times e a quantidade de jogadores na linha para sortear.
+        </Alert>
+      )}
       <TextField
         multiline
         minRows={5}
@@ -47,7 +61,7 @@ export default function PlayerListPaste({ onSubmit, maxPlayers }: PlayerListPast
       />
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       <Stack direction="row" spacing={2}>
-        <Button variant="contained" onClick={handlePaste}>
+        <Button variant="contained" onClick={handlePaste} disabled={!isConfigured} sx={{ textTransform: 'none' }}>
           Sortear agora
         </Button>
       </Stack>

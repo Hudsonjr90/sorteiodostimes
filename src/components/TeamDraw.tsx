@@ -99,6 +99,11 @@ const TeamDraw: React.FC<TeamDrawProps> = ({ teams, helperText }) => {
                     <ListItemText primary={player} />
                   </ListItem>
                 ))}
+                {team.length === 0 && (
+                  <ListItem disablePadding>
+                    <ListItemText primary="Sem jogadores" />
+                  </ListItem>
+                )}
               </List>
             </Paper>
           ))}

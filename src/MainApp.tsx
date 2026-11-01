@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction, type ChangeEvent } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   Switch,
   Tab,
   Tabs,
-  TextField,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -46,15 +45,14 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
   const [appMode, setAppMode] = useState<AppMode>('pelada');
   const [peladaView, setPeladaView] = useState<PeladaView>('config');
 
-  const [playerCount, setPlayerCount] = useState(0);
   const [players, setPlayers] = useState<string[]>([]);
   const [linePlayers, setLinePlayers] = useState(0);
   const [teamCount, setTeamCount] = useState(0);
-  const [countGoalkeeper, setCountGoalkeeper] = useState(false);
   const [teams, setTeams] = useState<string[][]>([]);
 
   const [openDonationModal, setOpenDonationModal] = useState(false);
-  const { shouldShow: shouldShowDonationModal } = useDonationPrompt(playerCount);
+  const filledPlayers = players.map((player) => player.trim()).filter(Boolean);
+  const { shouldShow: shouldShowDonationModal } = useDonationPrompt(filledPlayers.length);
   const installPrompt = useInstallPrompt();
 
   useEffect(() => {
@@ -65,31 +63,23 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
       }
       const parsed = JSON.parse(raw) as {
         appMode?: AppMode;
-        playerCount?: number;
         players?: string[];
         linePlayers?: number;
         teamCount?: number;
-        countGoalkeeper?: boolean;
         teams?: string[][];
       };
 
       if (parsed.appMode === 'pelada' || parsed.appMode === 'campeonato') {
         setAppMode(parsed.appMode);
       }
-      if (typeof parsed.playerCount === 'number' && parsed.playerCount >= 0) {
-        setPlayerCount(parsed.playerCount);
-      }
       if (Array.isArray(parsed.players)) {
         setPlayers(parsed.players.filter((item): item is string => typeof item === 'string'));
       }
-      if (typeof parsed.linePlayers === 'number' && parsed.linePlayers >= 0) {
+      if (typeof parsed.linePlayers === 'number' && Number.isInteger(parsed.linePlayers) && parsed.linePlayers >= 0) {
         setLinePlayers(parsed.linePlayers);
       }
-      if (typeof parsed.teamCount === 'number' && parsed.teamCount >= 0) {
+      if (typeof parsed.teamCount === 'number' && Number.isInteger(parsed.teamCount) && parsed.teamCount >= 0) {
         setTeamCount(parsed.teamCount);
-      }
-      if (typeof parsed.countGoalkeeper === 'boolean') {
-        setCountGoalkeeper(parsed.countGoalkeeper);
       }
       if (Array.isArray(parsed.teams)) {
         setTeams(
@@ -109,15 +99,13 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
     const payload = {
       themeMode,
       appMode,
-      playerCount,
       players,
       linePlayers,
       teamCount,
-      countGoalkeeper,
       teams,
     };
     localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(payload));
-  }, [themeMode, appMode, playerCount, players, linePlayers, teamCount, countGoalkeeper, teams]);
+  }, [themeMode, appMode, players, linePlayers, teamCount, teams]);
 
   useEffect(() => {
     if (shouldShowDonationModal) {
@@ -125,71 +113,49 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
     }
   }, [shouldShowDonationModal]);
 
-  const filledPlayers = players.map((p) => p.trim()).filter(Boolean);
-  const effectiveLinePlayers = linePlayers > 0 ? linePlayers : 1;
-  const playersPerTeam = countGoalkeeper ? effectiveLinePlayers + 1 : effectiveLinePlayers;
-  const estimatedTeams = Math.floor(playerCount / playersPerTeam);
-  const teamSize = countGoalkeeper ? linePlayers + 1 : linePlayers;
-  const canDraw =
-    linePlayers > 0 &&
-    teamCount >= 2 &&
-    estimatedTeams >= teamCount &&
-    estimatedTeams >= 2 &&
-    filledPlayers.length >= teamCount * teamSize;
+  const playerSlots = teamCount * linePlayers;
+  const isConfigured = teamCount >= 2 && linePlayers > 0;
+  const canDraw = isConfigured && filledPlayers.slice(0, playerSlots).length > 0;
 
-  useEffect(() => {
-    if (linePlayers === 0 || estimatedTeams < 2) {
-      setTeamCount(0);
-      return;
-    }
-    if (teamCount > estimatedTeams) {
-      setTeamCount(estimatedTeams);
-    }
-  }, [estimatedTeams, teamCount, linePlayers]);
-
-  const handleDrawTeams = () => {
-    if (!canDraw) {
-      return;
+  const handleDrawTeams = (sourcePlayers: string[] = players) => {
+    const playersToDraw = sourcePlayers
+      .map((player) => player.trim())
+      .filter(Boolean)
+      .slice(0, playerSlots);
+    if (!isConfigured || playersToDraw.length === 0) {
+      return false;
     }
 
-    const shuffled = filledPlayers
+    const shuffled = playersToDraw
       .map((p) => ({ p, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
       .map(({ p }) => p);
 
-    const result: string[][] = Array.from({ length: teamCount }, () => []);
-    shuffled.forEach((player, index) => {
-      result[index % teamCount].push(player);
-    });
+    const result = Array.from({ length: teamCount }, (_, index) =>
+      shuffled.slice(index * linePlayers, (index + 1) * linePlayers),
+    );
     setTeams(result);
+    return true;
   };
 
-  const handleCountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === '') {
-      setPlayerCount(0);
-      setPlayers([]);
-      setTeams([]);
-      return;
-    }
-    const count = Number(e.target.value);
-    if (Number.isNaN(count) || count < 1) {
-      return;
-    }
-    setPlayerCount(count);
-    setPlayers((prev) => Array.from({ length: count }, (_, i) => prev[i] || ''));
+  const handleLinePlayersChange = (value: number) => {
+    setLinePlayers(value);
     setTeams([]);
   };
 
-  const handleDrawAndGoToResult = () => {
-    handleDrawTeams();
-    if (canDraw) {
+  const handleTeamCountChange = (value: number) => {
+    setTeamCount(value);
+    setTeams([]);
+  };
+
+  const handleDrawAndGoToResult = (sourcePlayers: string[] = players) => {
+    if (handleDrawTeams(sourcePlayers)) {
       setPeladaView('resultado');
     }
   };
 
   const handleResetForNewDraw = () => {
-    // Limpa a lista atual para novo sorteio com novos nomes.
-    setPlayers(Array.from({ length: playerCount }, () => ''));
+    setPlayers(Array.from({ length: playerSlots }, () => ''));
     setTeams([]);
     setPeladaView('config');
     setPlayerInputMode('paste');
@@ -278,12 +244,14 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
               icon={<SportsSoccerRounded />}
               iconPosition="start"
               label="Pelada"
+              sx={{ textTransform: 'none' }}
             />
             <Tab
               value="campeonato"
               icon={<EmojiEventsRounded />}
               iconPosition="start"
               label="Campeonato"
+              sx={{ textTransform: 'none' }}
             />
           </Tabs>
 
@@ -295,98 +263,61 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                 variant="fullWidth"
                 sx={{ mb: 2 }}
               >
-                <Tab value="config" label="Configuração" />
-                <Tab value="resultado" label="Sorteio e resultado" />
+                <Tab value="config" label="Configuração" sx={{ textTransform: 'none' }} />
+                <Tab value="resultado" label="Sorteio e resultado" sx={{ textTransform: 'none' }} />
               </Tabs>
 
               {peladaView === 'config' && (
                 <>
+                  <TeamSetup
+                    teamCount={teamCount}
+                    setTeamCount={handleTeamCountChange}
+                    linePlayers={linePlayers}
+                    setLinePlayers={handleLinePlayersChange}
+                  />
                   <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      Quantos jogadores vão jogar?
-                    </Typography>
-                    <TextField
-                      label="Número total de jogadores"
-                      type="number"
-                      inputProps={{ min: 1 }}
-                      value={playerCount === 0 ? '' : playerCount}
-                      onChange={handleCountChange}
-                      onFocus={(e) => e.target.select()}
-                      variant="outlined"
-                      size="small"
-                      sx={{ mt: 1, maxWidth: 240 }}
-                      fullWidth
-                      helperText="Digite o total para liberar a configuração"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={countGoalkeeper}
-                          onChange={(e) => setCountGoalkeeper(e.target.checked)}
-                          size="small"
-                        />
-                      }
-                      label={
-                        <Typography variant="body2">
-                          {countGoalkeeper ? 'Com goleiro fixo por time' : 'Sem goleiro fixo (rotativo)'}
-                        </Typography>
-                      }
-                      sx={{ mt: 1.5, display: 'flex', alignItems: 'center' }}
-                    />
-                  </Paper>
-
-                  {playerCount > 0 && (
-                    <>
-                      <TeamSetup
-                        teamCount={teamCount}
-                        setTeamCount={setTeamCount}
-                        linePlayers={linePlayers}
-                        setLinePlayers={setLinePlayers}
-                        estimatedTeams={estimatedTeams}
-                        countGoalkeeper={countGoalkeeper}
+                    <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+                      <Button
+                        variant={playerInputMode === 'individual' ? 'contained' : 'outlined'}
+                        onClick={() => setPlayerInputMode('individual')}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Adicionar individualmente
+                      </Button>
+                      <Button
+                        variant={playerInputMode === 'paste' ? 'contained' : 'outlined'}
+                        onClick={() => setPlayerInputMode('paste')}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Colar lista de nomes
+                      </Button>
+                    </Stack>
+                    {playerInputMode === 'individual' ? (
+                      <PlayerSetup
+                        playerSlots={playerSlots}
+                        players={players}
+                        setPlayers={setPlayers}
                       />
-                      <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-                        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                          <Button
-                            variant={playerInputMode === 'individual' ? 'contained' : 'outlined'}
-                            onClick={() => setPlayerInputMode('individual')}
-                          >
-                            Adicionar individualmente
-                          </Button>
-                          <Button
-                            variant={playerInputMode === 'paste' ? 'contained' : 'outlined'}
-                            onClick={() => setPlayerInputMode('paste')}
-                          >
-                            Colar lista de nomes
-                          </Button>
-                        </Stack>
-                        {playerInputMode === 'individual' ? (
-                          <PlayerSetup
-                            playerCount={playerCount}
-                            players={players}
-                            setPlayers={setPlayers}
-                          />
-                        ) : (
-                          <PlayerListPaste
-                            maxPlayers={playerCount}
-                            onSubmit={(names) => {
-                              setPlayers(names);
-                              setTimeout(() => handleDrawAndGoToResult(), 100);
-                            }}
-                          />
-                        )}
-                      </Paper>
-                      {playerInputMode === 'individual' && (
-                        <Button
-                          variant="contained"
-                          onClick={handleDrawAndGoToResult}
-                          disabled={!canDraw}
-                          sx={{ textTransform: 'none' }}
-                        >
-                          Sortear times e ver resultado
-                        </Button>
-                      )}
-                    </>
+                    ) : (
+                      <PlayerListPaste
+                        maxPlayers={playerSlots}
+                        isConfigured={isConfigured}
+                        onSubmit={(names) => {
+                          setPlayers(names);
+                          handleDrawAndGoToResult(names);
+                        }}
+                      />
+                    )}
+                  </Paper>
+                  {playerInputMode === 'individual' && (
+                    <Button
+                      variant="contained"
+                      onClick={() => handleDrawAndGoToResult()}
+                      disabled={!canDraw}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Sortear times e ver resultado
+                    </Button>
                   )}
                 </>
               )}
@@ -397,7 +328,7 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                     teams={teams}
                     helperText={
                       linePlayers > 0
-                        ? `${teamCount} times de ${linePlayers} na linha${countGoalkeeper ? ' + goleiro' : ''} (${teamSize} por time)`
+                        ? `${teamCount} times de até ${linePlayers} jogadores na linha; goleiros ficam fora do sorteio`
                         : 'Preencha as configurações para sortear'
                     }
                   />
