@@ -332,14 +332,24 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                         : 'Preencha as configurações para sortear'
                     }
                   />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleResetForNewDraw}
-                    sx={{ textTransform: 'none', alignSelf: 'flex-center' }}
-                  >
-                    Sortear novos times
-                  </Button>
+                  <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleDrawTeams()}
+                      disabled={!canDraw}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Sortear novamente
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleResetForNewDraw}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Sortear novos times
+                    </Button>
+                  </Stack>
                 </Stack>
               )}
             </>
