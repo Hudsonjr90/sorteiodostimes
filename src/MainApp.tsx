@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import {
   Box,
   Button,
@@ -12,88 +12,109 @@ import {
   Tabs,
   Typography,
   useTheme,
-} from '@mui/material';
-import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
-import LightModeRounded from '@mui/icons-material/LightModeRounded';
-import SportsSoccerRounded from '@mui/icons-material/SportsSoccerRounded';
-import EmojiEventsRounded from '@mui/icons-material/EmojiEventsRounded';
-import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded';
-import PlayerSetup from './components/PlayerSetup';
-import PlayerListPaste from './components/PlayerListPaste';
-import TeamSetup from './components/TeamSetup';
-import TeamDraw from './components/TeamDraw';
-import ChampionshipSetup from './components/ChampionshipSetup';
-import DonationModal from './components/DonationModal';
-import InstallBanner from './components/InstallBanner';
-import { dismissDonationPrompt, useDonationPrompt } from './hooks/useDonationPrompt';
-import { useInstallPrompt } from './hooks/useInstallPrompt';
+} from '@mui/material'
+import DarkModeRounded from '@mui/icons-material/DarkModeRounded'
+import LightModeRounded from '@mui/icons-material/LightModeRounded'
+import SportsSoccerRounded from '@mui/icons-material/SportsSoccerRounded'
+import EmojiEventsRounded from '@mui/icons-material/EmojiEventsRounded'
+import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded'
+import PlayerSetup from './components/PlayerSetup'
+import PlayerListPaste from './components/PlayerListPaste'
+import TeamSetup from './components/TeamSetup'
+import TeamDraw from './components/TeamDraw'
+import ChampionshipSetup from './components/ChampionshipSetup'
+import DonationModal from './components/DonationModal'
+import InstallBanner from './components/InstallBanner'
+import {
+  dismissDonationPrompt,
+  useDonationPrompt,
+} from './hooks/useDonationPrompt'
+import { useInstallPrompt } from './hooks/useInstallPrompt'
 
-type AppMode = 'pelada' | 'campeonato';
-type PeladaView = 'config' | 'resultado';
+type AppMode = 'pelada' | 'campeonato'
+type PeladaView = 'config' | 'resultado'
 
-const APP_STORAGE_KEY = 'sorteio.app.v1';
+const APP_STORAGE_KEY = 'sorteio.app.v1'
 
 interface MainAppProps {
-  themeMode: 'light' | 'dark';
-  setThemeMode: Dispatch<SetStateAction<'light' | 'dark'>>;
+  themeMode: 'light' | 'dark'
+  setThemeMode: Dispatch<SetStateAction<'light' | 'dark'>>
 }
 
 export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const [playerInputMode, setPlayerInputMode] = useState<'individual' | 'paste'>('individual');
-  const [appMode, setAppMode] = useState<AppMode>('pelada');
-  const [peladaView, setPeladaView] = useState<PeladaView>('config');
+  const [playerInputMode, setPlayerInputMode] = useState<
+    'individual' | 'paste'
+  >('individual')
+  const [appMode, setAppMode] = useState<AppMode>('pelada')
+  const [peladaView, setPeladaView] = useState<PeladaView>('config')
 
-  const [players, setPlayers] = useState<string[]>([]);
-  const [linePlayers, setLinePlayers] = useState(0);
-  const [teamCount, setTeamCount] = useState(0);
-  const [teams, setTeams] = useState<string[][]>([]);
+  const [players, setPlayers] = useState<string[]>([])
+  const [linePlayers, setLinePlayers] = useState(0)
+  const [teamCount, setTeamCount] = useState(0)
+  const [teams, setTeams] = useState<string[][]>([])
 
-  const [openDonationModal, setOpenDonationModal] = useState(false);
-  const filledPlayers = players.map((player) => player.trim()).filter(Boolean);
-  const { shouldShow: shouldShowDonationModal } = useDonationPrompt(filledPlayers.length);
-  const installPrompt = useInstallPrompt();
+  const [openDonationModal, setOpenDonationModal] = useState(false)
+  const filledPlayers = players.map((player) => player.trim()).filter(Boolean)
+  const { shouldShow: shouldShowDonationModal } = useDonationPrompt(
+    filledPlayers.length,
+  )
+  const installPrompt = useInstallPrompt()
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(APP_STORAGE_KEY);
+      const raw = localStorage.getItem(APP_STORAGE_KEY)
       if (!raw) {
-        return;
+        return
       }
       const parsed = JSON.parse(raw) as {
-        appMode?: AppMode;
-        players?: string[];
-        linePlayers?: number;
-        teamCount?: number;
-        teams?: string[][];
-      };
+        appMode?: AppMode
+        players?: string[]
+        linePlayers?: number
+        teamCount?: number
+        teams?: string[][]
+      }
 
       if (parsed.appMode === 'pelada' || parsed.appMode === 'campeonato') {
-        setAppMode(parsed.appMode);
+        setAppMode(parsed.appMode)
       }
       if (Array.isArray(parsed.players)) {
-        setPlayers(parsed.players.filter((item): item is string => typeof item === 'string'));
+        setPlayers(
+          parsed.players.filter(
+            (item): item is string => typeof item === 'string',
+          ),
+        )
       }
-      if (typeof parsed.linePlayers === 'number' && Number.isInteger(parsed.linePlayers) && parsed.linePlayers >= 0) {
-        setLinePlayers(parsed.linePlayers);
+      if (
+        typeof parsed.linePlayers === 'number' &&
+        Number.isInteger(parsed.linePlayers) &&
+        parsed.linePlayers >= 0
+      ) {
+        setLinePlayers(parsed.linePlayers)
       }
-      if (typeof parsed.teamCount === 'number' && Number.isInteger(parsed.teamCount) && parsed.teamCount >= 0) {
-        setTeamCount(parsed.teamCount);
+      if (
+        typeof parsed.teamCount === 'number' &&
+        Number.isInteger(parsed.teamCount) &&
+        parsed.teamCount >= 0
+      ) {
+        setTeamCount(parsed.teamCount)
       }
       if (Array.isArray(parsed.teams)) {
         setTeams(
           parsed.teams.map((teamPlayers) =>
             Array.isArray(teamPlayers)
-              ? teamPlayers.filter((item): item is string => typeof item === 'string')
+              ? teamPlayers.filter(
+                  (item): item is string => typeof item === 'string',
+                )
               : [],
           ),
-        );
+        )
       }
     } catch {
-      localStorage.removeItem(APP_STORAGE_KEY);
+      localStorage.removeItem(APP_STORAGE_KEY)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const payload = {
@@ -103,63 +124,63 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
       linePlayers,
       teamCount,
       teams,
-    };
-    localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(payload));
-  }, [themeMode, appMode, players, linePlayers, teamCount, teams]);
+    }
+    localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(payload))
+  }, [themeMode, appMode, players, linePlayers, teamCount, teams])
 
   useEffect(() => {
     if (shouldShowDonationModal) {
-      setOpenDonationModal(true);
+      setOpenDonationModal(true)
     }
-  }, [shouldShowDonationModal]);
+  }, [shouldShowDonationModal])
 
-  const playerSlots = teamCount * linePlayers;
-  const isConfigured = teamCount >= 2 && linePlayers > 0;
-  const canDraw = isConfigured && filledPlayers.slice(0, playerSlots).length > 0;
+  const playerSlots = teamCount * linePlayers
+  const isConfigured = teamCount >= 2 && linePlayers > 0
+  const canDraw = isConfigured && filledPlayers.slice(0, playerSlots).length > 0
 
   const handleDrawTeams = (sourcePlayers: string[] = players) => {
     const playersToDraw = sourcePlayers
       .map((player) => player.trim())
       .filter(Boolean)
-      .slice(0, playerSlots);
+      .slice(0, playerSlots)
     if (!isConfigured || playersToDraw.length === 0) {
-      return false;
+      return false
     }
 
     const shuffled = playersToDraw
       .map((p) => ({ p, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
-      .map(({ p }) => p);
+      .map(({ p }) => p)
 
     const result = Array.from({ length: teamCount }, (_, index) =>
       shuffled.slice(index * linePlayers, (index + 1) * linePlayers),
-    );
-    setTeams(result);
-    return true;
-  };
+    )
+    setTeams(result)
+    return true
+  }
 
   const handleLinePlayersChange = (value: number) => {
-    setLinePlayers(value);
-    setTeams([]);
-  };
+    setLinePlayers(value)
+    setTeams([])
+  }
 
   const handleTeamCountChange = (value: number) => {
-    setTeamCount(value);
-    setTeams([]);
-  };
+    setTeamCount(value)
+    setTeams([])
+  }
 
   const handleDrawAndGoToResult = (sourcePlayers: string[] = players) => {
     if (handleDrawTeams(sourcePlayers)) {
-      setPeladaView('resultado');
+      setPeladaView('resultado')
     }
-  };
+  }
 
   const handleResetForNewDraw = () => {
-    setPlayers(Array.from({ length: playerSlots }, () => ''));
-    setTeams([]);
-    setPeladaView('config');
-    setPlayerInputMode('paste');
-  };
+    setPlayers(Array.from({ length: playerSlots }, () => ''))
+    setTeams([])
+    setPeladaView('config')
+    setPlayerInputMode('paste')
+  }
 
   return (
     <Box
@@ -263,8 +284,16 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                 variant="fullWidth"
                 sx={{ mb: 2 }}
               >
-                <Tab value="config" label="Configuração" sx={{ textTransform: 'none' }} />
-                <Tab value="resultado" label="Sorteio e resultado" sx={{ textTransform: 'none' }} />
+                <Tab
+                  value="config"
+                  label="Configuração"
+                  sx={{ textTransform: 'none' }}
+                />
+                <Tab
+                  value="resultado"
+                  label="Sorteio e resultado"
+                  sx={{ textTransform: 'none' }}
+                />
               </Tabs>
 
               {peladaView === 'config' && (
@@ -278,18 +307,24 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                   <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
                     <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
                       <Button
-                        variant={playerInputMode === 'individual' ? 'contained' : 'outlined'}
-                        onClick={() => setPlayerInputMode('individual')}
-                        sx={{ textTransform: 'none' }}
-                      >
-                        Adicionar individualmente
-                      </Button>
-                      <Button
-                        variant={playerInputMode === 'paste' ? 'contained' : 'outlined'}
+                        variant={
+                          playerInputMode === 'paste' ? 'contained' : 'outlined'
+                        }
                         onClick={() => setPlayerInputMode('paste')}
                         sx={{ textTransform: 'none' }}
                       >
                         Colar lista de nomes
+                      </Button>
+                      <Button
+                        variant={
+                          playerInputMode === 'individual'
+                            ? 'contained'
+                            : 'outlined'
+                        }
+                        onClick={() => setPlayerInputMode('individual')}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Adicionar individualmente
                       </Button>
                     </Stack>
                     {playerInputMode === 'individual' ? (
@@ -303,8 +338,8 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
                         maxPlayers={playerSlots}
                         isConfigured={isConfigured}
                         onSubmit={(names) => {
-                          setPlayers(names);
-                          handleDrawAndGoToResult(names);
+                          setPlayers(names)
+                          handleDrawAndGoToResult(names)
                         }}
                       />
                     )}
@@ -393,10 +428,10 @@ export default function MainApp({ themeMode, setThemeMode }: MainAppProps) {
       <DonationModal
         open={openDonationModal}
         onClose={() => {
-          setOpenDonationModal(false);
-          dismissDonationPrompt();
+          setOpenDonationModal(false)
+          dismissDonationPrompt()
         }}
       />
     </Box>
-  );
+  )
 }
