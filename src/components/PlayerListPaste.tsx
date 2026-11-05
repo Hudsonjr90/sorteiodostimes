@@ -18,10 +18,20 @@ export default function PlayerListPaste({
   const handlePaste = () => {
     const lines = input
       .split(/\r?\n/)
-      .map(line => line.replace(/^\s*\d+[-.\s]*|^[-.\s]+/, '').trim())
+      .flatMap((line) => {
+        const numberedMatch = line.match(/^\s*\d+\s*(?:[-.)]\s*|\s+)(.+)$/);
+        if (numberedMatch) {
+          return [numberedMatch[1].replace(/\*+/g, '').trim()];
+        }
+
+        return line
+          .split(/\s+(?=\*+)/)
+          .filter((item) => /^\s*\*+/.test(item))
+          .map((item) => item.replace(/^\s*\*+|\*+\s*$/g, '').trim());
+      })
       .filter(Boolean);
     if (lines.length === 0) {
-      setError('Cole pelo menos um nome.');
+      setError('Cole nomes numerados (1- Hudson) ou marcados com asterisco (*Hudson).');
       return;
     }
     if (lines.length > maxPlayers) {
@@ -38,8 +48,8 @@ export default function PlayerListPaste({
         Colar lista de nomes
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        Cole a lista com um nome por linha. Se faltarem jogadores, os primeiros times serão preenchidos
-        e o último ficará incompleto.
+        Cole a lista com um nome por linha, numerada (1- Hudson) ou com asterisco (*Hudson). Se faltarem
+        jogadores, os primeiros times serão preenchidos e o último ficará incompleto.
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
         Capacidade máxima para esta configuração: {maxPlayers} jogadores.
